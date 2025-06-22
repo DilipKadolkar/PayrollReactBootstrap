@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import icon from "../img/icon.png";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+    const [login , setLogin] = useState(false);
+    
+    const handleClick = () =>{
+        setLogin(true)
+        navigate('/dashboard/payroll')
+    }
+    console.log(login)
     const navigate = useNavigate()
     return (
         <>
@@ -25,7 +32,7 @@ export default function Login() {
                                     <input type="password" className="form-control" id="password" placeholder="Enter your password" />
                                 </div>
                                 <div className="d-grid">
-                                <button type="button" className="btn btn-primary" onClick={() => navigate('/dashboard/payroll')}>Login</button>
+                                <button type="button" className="btn btn-primary" onClick={() => handleClick()}>Login</button>
 
                                 </div>
                                 <div className="text-center mt-3">
