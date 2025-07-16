@@ -14,6 +14,8 @@ import AddCompany from "./Components/Payroll/Addcompany";
 import AddEmployee from "./Components/Payroll/AddEmployee";
 import EmployeeDetails from "./Components/Employee/EmployeeDetails";
 import Payslip from "./Components/Employee/PaySlip";
+import Admin from "./Components/Employee/Admin";
+import './App.css'; // Import the CSS file
 
 export default function App() {
   return (
@@ -41,6 +43,7 @@ export default function App() {
           <Route path="employee">
             <Route path="employeedetails" element={<EmployeeDetails/>} />
             <Route path="payslip" element={<Payslip />}/>
+            <Route path="admin" element={<Admin />}/>
           </Route>
         </Route>
       </Routes>
