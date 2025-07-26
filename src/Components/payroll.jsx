@@ -145,6 +145,12 @@ export default function PayrollProcess() {
       case "Add Employee":
         navigate("/dashboard/payroll/addEmployee");
         break;
+      case "Employee Attendance":
+        navigate("/dashboard/payroll/attendance");
+        break;  
+      case "Overtime Details":
+        navigate("/dashboard/payroll/overtime");
+        break;   
       default:
         alert(`Clicked: ${title}`);
     }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 export default function AddCompany() {
   const [newCompanyName, setNewCompanyName] = useState("");
+  const [newAddress, setNewAddress] = useState("");
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     if (newCompanyName) {
@@ -11,12 +12,13 @@ export default function AddCompany() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ company_name: newCompanyName }),
+          body: JSON.stringify({ companyName: newCompanyName ,address:newAddress}),
         });
         
         if (response.ok) {
           alert("Company added successfully");
           setNewCompanyName("");
+          setNewAddress("")
         } else {
           alert("Error adding company");
         }
@@ -35,13 +37,20 @@ export default function AddCompany() {
         <div className="card-body p-4">
           <h3 className="card-title text-center mb-4">Add Company</h3>
           <form onSubmit={handleFormSubmit}>
-            <div className="mb-3">
+            <div className="mb-3 d-flex flex-column gap-4">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Enter company name"
                 value={newCompanyName}
                 onChange={(e) => setNewCompanyName(e.target.value)}
+              />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter company Address"
+                value={newAddress}
+                onChange={(e) => setNewAddress(e.target.value)}
               />
             </div>
             <button type="submit" className="btn btn-dark w-100">

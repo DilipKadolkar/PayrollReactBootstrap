@@ -14,6 +14,8 @@ import AddCompany from "./Components/Payroll/Addcompany";
 import AddEmployee from "./Components/Payroll/AddEmployee";
 import EmployeeDetails from "./Components/Employee/EmployeeDetails";
 import Payslip from "./Components/Employee/PaySlip";
+import EmployeeAttendance from "./Components/Payroll/EmployeeAttendance";
+import EmployeeOvertime from "./Components/Payroll/EmployeeOvertime";
 
 export default function App() {
   return (
@@ -35,6 +37,9 @@ export default function App() {
             <Route path="payrollStatement" element={<PayrollStatement />} />
             <Route path="addCompany" element={<AddCompany />} />
             <Route path="addEmployee" element={<AddEmployee />} />
+            <Route path="attendance" element={<EmployeeAttendance />} />
+            <Route path="overtime" element={<EmployeeOvertime />} />
+
           </Route>
 
           <Route path="employee" element={<EmployeeInfo />} />

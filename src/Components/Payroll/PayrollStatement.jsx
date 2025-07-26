@@ -131,7 +131,7 @@ export default function PayrollStatement() {
       try {
         const response = await fetch("http://localhost:8080/api/companies");
         const data = await response.json();
-        setCompanies(data);
+        setCompanies(data.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
       }
@@ -201,7 +201,7 @@ export default function PayrollStatement() {
               <Modal.Title>Select Company</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {companies.map((company, index) => (
+              {companies?.map((company, index) => (
                 <Button
                   key={index}
                   variant="light"
