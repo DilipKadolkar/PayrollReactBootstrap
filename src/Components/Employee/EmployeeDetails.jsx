@@ -14,7 +14,7 @@ function EmployeeDetails() {
       try {
         const response = await fetch("http://localhost:8080/api/employees");
         const data = await response.json();
-        setemployeesData(data);
+        setemployeesData(data.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
       }
@@ -65,12 +65,13 @@ function EmployeeDetails() {
                   <td>${emp.jobTitle}</td>
                   <td>{emp.department}</td>
                   <td>{emp.hireDate}</td>
-                  <td>{emp.salary != null ? `$${emp.salary.toLocaleString()}` : 'N/A'}</td>
+                  <td>${emp.salary != null ? emp.salary.toLocaleString() : 'N/A'}</td>
+
                   <td>{emp.addressLine1 + emp.addressLine2}</td>
                   <td>{emp.city}</td>
                   <td>${emp.state}</td>
                   <td>{emp.zipcode}</td>
-                  
+
                 </tr>
               ))
             ) : (

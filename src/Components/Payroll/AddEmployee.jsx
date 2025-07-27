@@ -9,6 +9,7 @@ import { Modal, Button } from 'react-bootstrap';
 
 export default function AddEmployee() {
   const [selectedCompany, setSelectedCompany] = useState("");
+  const [companyData,setCompanyData] = useState(null)
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [fatherName, setFatherName] = useState("");
@@ -31,14 +32,23 @@ export default function AddEmployee() {
   const [employeeID, setEmployeeId] = useState("");
   const [companies, setCompanies] = useState([]);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
-
+  console.log(selectedCompany)  
   useEffect(() => {
-    fetch("http://localhost:8080/api/companies")
-      .then(res => res.json())
-      .then(data => setCompanies(data))
-      .catch(err => console.error("Error fetching companies:", err));
+    fetchCompanies();
   }, []);
 
+  const fetchCompanies = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/companies");
+      const data = await response.json();
+      setCompanies(data.data);
+    } catch (err) {
+      console.error("Error fetching companies:", err);
+    }
+  };
+
+
+  
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!selectedCompany || !firstName) {
@@ -46,7 +56,7 @@ export default function AddEmployee() {
     }
 
     const payload = {
-      company: selectedCompany, firstName, lastName, fatherName, birthDate, hireDate, gender,
+      companyId: companyData.id, firstName, lastName, fatherName, birthDate, hireDate, gender,
       phoneNumber, emergencyContact, reportingManager, probationPeriod, aadharNumber,
       email, employeeType, addressLine1, addressLine2, city, state, zipCode, salary, employeeID,
     };
@@ -116,6 +126,7 @@ export default function AddEmployee() {
                   className="w-100 mb-2 text-start"
                   onClick={() => {
                     setSelectedCompany(c.companyName);
+                    setCompanyData(c)
                     setShowCompanyModal(false);
                   }}
                 >
