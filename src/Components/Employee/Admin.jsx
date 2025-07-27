@@ -16,7 +16,7 @@ function Admin() {
       try {
         const response = await fetch("http://localhost:8080/api/employees");
         const data = await response.json();
-        setEmployeesData(data);
+        setEmployeesData(data.data);
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
