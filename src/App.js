@@ -17,6 +17,9 @@ import Payslip from "./Components/Employee/PaySlip";
 import EmployeeAttendance from "./Components/Payroll/EmployeeAttendance";
 import EmployeeOvertime from "./Components/Payroll/EmployeeOvertime";
 
+import Admin from "./Components/Employee/Admin";
+import './App.css'; // Import the CSS file
+
 export default function App() {
   return (
     <BrowserRouter basename="/">
@@ -46,6 +49,7 @@ export default function App() {
           <Route path="employee">
             <Route path="employeedetails" element={<EmployeeDetails/>} />
             <Route path="payslip" element={<Payslip />}/>
+            <Route path="admin" element={<Admin />}/>
           </Route>
         </Route>
       </Routes>
