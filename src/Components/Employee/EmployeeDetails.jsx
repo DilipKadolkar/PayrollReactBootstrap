@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function EmployeeDetails() {
   const [searchTerm, setSearchTerm] = useState('');
   const [employeesData , setemployeesData] = useState([])
-  const filteredEmployees = employeesData.filter(emp =>
+  const filteredEmployees = employeesData?.filter(emp =>
     `${emp.firstName} ${emp.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -54,7 +54,7 @@ function EmployeeDetails() {
             </tr>
           </thead>
           <tbody>
-            {filteredEmployees.length > 0 ? (
+            {filteredEmployees?.length > 0 ? (
               filteredEmployees.map(emp => (
                 <tr key={emp.id}>
                   <td>{emp.employeeID}</td>
