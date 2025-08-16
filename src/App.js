@@ -19,6 +19,7 @@ import EmployeeOvertime from "./Components/Payroll/EmployeeOvertime";
 
 import Admin from "./Components/Employee/Admin";
 import './App.css'; // Import the CSS file
+import EmployeeDashboard from "./Components/Roles Wise Dashboard/EmployeeDashboard";
 
 export default function App() {
   return (
@@ -50,6 +51,12 @@ export default function App() {
             <Route path="employeedetails" element={<EmployeeDetails/>} />
             <Route path="payslip" element={<Payslip />}/>
             <Route path="admin" element={<Admin />}/>
+          </Route>
+
+          <Route path="employeeDashboard" element={<EmployeeDashboard />} />
+          <Route path="employee">
+            <Route path="employeedetails" element={<EmployeeDetails/>} />
+            <Route path="payslip" element={<Payslip />}/>
           </Route>
         </Route>
       </Routes>
