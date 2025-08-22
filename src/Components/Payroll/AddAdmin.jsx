@@ -1,23 +1,32 @@
 import { faBuilding } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
+import { AuthContext } from "../AuthContext";
 
 export default function AddAdmin() {
   const [adminemail, setAdminEmail] = useState("");
   const [adminpassword, setAdminPassword] = useState("");
-
+    const [role , setRole] = useState("")
    const [selectedCompany, setSelectedCompany] = useState("");
     const [companyData, setCompanyData] = useState(null);
     const [companies, setCompanies] = useState([]);
     const [showCompanyModal, setShowCompanyModal] = useState(false);
+
+    const {token} = useContext(AuthContext)
  useEffect(() => {
     fetchCompanies();
   }, []);
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/companies");
+        const response = await fetch("http://localhost:8080/api/companies", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // ✅ add JWT here
+            },
+          });
       const data = await response.json();
       setCompanies(data.data);
     } catch (err) {
@@ -29,12 +38,13 @@ export default function AddAdmin() {
     event.preventDefault();
     if (selectedCompany) {
       try {
-        const response = await fetch(`http://localhost:8080/api/companies`, {
+        const response = await fetch(`http://localhost:8080/createadmin/${selectedCompany}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
           },
-          body: JSON.stringify({ AdminEntity: {adminEmail : adminemail , Password : adminpassword} ,companyName: selectedCompany}),
+          body: JSON.stringify({ adminEmail : adminemail , password : adminpassword,role : role}),
         });
         
         if (response.ok) {
@@ -104,6 +114,13 @@ export default function AddAdmin() {
                 placeholder="Enter admin password"
                 value={adminpassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
+              />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter Role "
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
               />
             </div>
             <button type="submit" className="btn btn-dark w-100">

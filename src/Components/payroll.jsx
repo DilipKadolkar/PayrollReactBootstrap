@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   faUserPlus,
   faDollarSign,
@@ -41,6 +41,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Card from "./Card";
 import { Outlet, useNavigate } from "react-router-dom";
+import { AuthContext } from "./AuthContext";
 
 const cards = [
   { title: "Process Payroll", icon: faFileInvoiceDollar, path: "/dashboard/payroll/uploadExcelProcess" },
@@ -101,16 +102,17 @@ const employeeCard = [
 export default function Payroll() {
   const navigate = useNavigate();
   const [cardArray , setCardArray] = useState([])
-
+  const {roles} = useContext(AuthContext);
+  console.log(roles)
   useEffect(()=>{
-    const role = "superadmin"
-    if(role === "superadmin"){
-      setCardArray(cards)
-    }else if(role === "admin"){
-      setCardArray(adminCard)
-    }else{
-      setCardArray(employeeCard)
+    if (roles.includes("ROLE_SUPER_ADMIN")) {
+      setCardArray(cards);
+    } else if (roles.includes("ROLE_ADMIN")) {
+      setCardArray(adminCard);
+    } else {
+      setCardArray(employeeCard);
     }
+    
   })
   const handleCardClick = (card) => {
     if (card.path) {

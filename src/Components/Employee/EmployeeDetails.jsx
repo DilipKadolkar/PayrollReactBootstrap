@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { AuthContext } from '../AuthContext';
 
 
 function EmployeeDetails() {
@@ -8,11 +9,17 @@ function EmployeeDetails() {
   const filteredEmployees = employeesData?.filter(emp =>
     `${emp.firstName} ${emp.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  const {token} = useContext(AuthContext)
   useEffect(()=>{
     const fetchEployeeData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/employees");
+        const response = await fetch("http://localhost:8080/api/employees", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
+          },
+        });
         const data = await response.json();
         setemployeesData(data.data);
       } catch (error) {

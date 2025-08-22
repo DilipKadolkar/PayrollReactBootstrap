@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
+import { AuthContext } from "./AuthContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-
   // Close menu on window resize if screen is large
   useEffect(() => {
     const handleResize = () => {
@@ -26,6 +26,12 @@ function Navbar() {
     }
   };
 
+  const {token , setToken} = useContext(AuthContext)
+ 
+  const handleLogOut = () =>{
+    localStorage.clear(); // removes all keys and values in localStorage
+    setToken(null)
+  }
   return (
     <nav className="navbar navbar-expand-xl navbar-dark bg-dark fixed-top px-3">
       <span className="navbar-brand fw-bold mx-auto mx-xl-0">
@@ -42,33 +48,43 @@ function Navbar() {
       </button>
 
       <div className={`navbar-collapse ${menuOpen ? "d-block" : "d-none"} d-xl-flex`}>
-        <ul className="navbar-nav ms-auto d-flex gap-2 mt-2 mt-xl-0">
-          <li className="nav-item">
-            <NavLink to="/" className="nav-link" onClick={handleNavClick}>
-              Home
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/services" className="nav-link" onClick={handleNavClick}>
-              Services
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/login" className="nav-link" onClick={handleNavClick}>
-              Login
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/register" className="nav-link" onClick={handleNavClick}>
-              Register
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/contact" className="nav-link" onClick={handleNavClick}>
-              Contact
-            </NavLink>
-          </li>
-        </ul>
+      <ul className="navbar-nav ms-auto d-flex gap-2 mt-2 mt-xl-0">
+  {!token ? (
+    <>
+      <li className="nav-item">
+        <NavLink to="/" className="nav-link" onClick={handleNavClick}>
+          Home
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/services" className="nav-link" onClick={handleNavClick}>
+          Services
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/login" className="nav-link" onClick={handleNavClick}>
+          Login
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/register" className="nav-link" onClick={handleNavClick}>
+          Register
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink to="/contact" className="nav-link" onClick={handleNavClick}>
+          Contact
+        </NavLink>
+      </li>
+    </>
+  ) : (
+    <li className="nav-item">
+      <NavLink to="/login" className="nav-link" onClick={handleLogOut}>
+        Log Out
+      </NavLink>
+    </li>
+  )}
+</ul>
       </div>
     </nav>
   );

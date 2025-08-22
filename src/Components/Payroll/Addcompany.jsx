@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../AuthContext";
 
 export default function AddCompany() {
   const [newCompanyName, setNewCompanyName] = useState("");
   const [newAddress, setNewAddress] = useState("");
+  const { token } = useContext(AuthContext); // get JWT from context
+  console.log(token)
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     if (newCompanyName) {
@@ -11,6 +14,7 @@ export default function AddCompany() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ companyName: newCompanyName ,address:newAddress}),
         });

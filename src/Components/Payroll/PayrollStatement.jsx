@@ -113,10 +113,11 @@
 //     </div>
 //   );
 // }
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { AuthContext } from "../AuthContext";
 
 export default function PayrollStatement() {
   const [selectedCompany, setSelectedCompany] = useState("");
@@ -125,11 +126,17 @@ export default function PayrollStatement() {
   const [showCompanyModal, setShowCompanyModal] = useState(false);
   const [showMonthModal, setShowMonthModal] = useState(false);
   const navigate = useNavigate();
-
+  const{token} = useContext(AuthContext)
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/companies");
+        const response = await fetch("http://localhost:8080/api/companies", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
+          },
+        });
         const data = await response.json();
         setCompanies(data.data);
       } catch (error) {

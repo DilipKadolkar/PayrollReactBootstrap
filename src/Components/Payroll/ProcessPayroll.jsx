@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -14,6 +14,7 @@ import {
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload, faBuilding, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { AuthContext } from '../AuthContext';
 
 export default function ProcessPayroll() {
   const [file, setFile] = useState(null);
@@ -23,11 +24,17 @@ export default function ProcessPayroll() {
   const [showCompanyModal, setShowCompanyModal] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
-
+  const {token} = useContext(AuthContext)
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/companies");
+        const response = await fetch("http://localhost:8080/api/companies", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
+          },
+        });
         const data = await response.json();
         console.log(data.data)
         setCompanies(data.data);

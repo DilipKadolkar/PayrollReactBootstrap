@@ -180,7 +180,7 @@
 //     </div>
 //   );
 // }
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser, faCalendar, faPhone, faEnvelope, faIdCard,
@@ -188,12 +188,14 @@ import {
   faHome, faMoneyBill, faIdBadge, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 import { Modal, Button } from 'react-bootstrap';
+import { AuthContext } from "../AuthContext";
 
 export default function AddEmployee() {
   const [selectedCompany, setSelectedCompany] = useState("");
   const [companyData, setCompanyData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const {token} = useContext(AuthContext)
 
   const [employee, setEmployee] = useState({
     firstName: "", lastName: "", fatherName: "", birthDate: "", hireDate: "", gender: "",
@@ -205,10 +207,15 @@ export default function AddEmployee() {
   useEffect(() => {
     fetchCompanies();
   }, []);
-
   const fetchCompanies = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/companies");
+      const response = await fetch("http://localhost:8080/api/companies", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ add JWT here
+        },
+      });
       const data = await response.json();
       setCompanies(data.data);
     } catch (err) {
@@ -230,8 +237,9 @@ export default function AddEmployee() {
     try {
       const res = await fetch("http://localhost:8080/api/employees", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`},
+          body: JSON.stringify(payload),
       });
 
       if (res.ok) {

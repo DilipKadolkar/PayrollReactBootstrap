@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Container,
   Row,
@@ -10,6 +10,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthContext } from "../AuthContext";
 
 export default function Payslip() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -31,10 +32,18 @@ export default function Payslip() {
     "November",
     "December",
   ];
+
+  const {token} = useContext(AuthContext)
   useEffect(() => {
     const fetchEmployeeData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/employees");
+        const response = await fetch("http://localhost:8080/api/employees", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
+          },
+        });
         const data = await response.json();
         setEmployees(data.data);
       } catch (error) {
@@ -62,6 +71,10 @@ export default function Payslip() {
         `http://localhost:8080/payslip/${employeeID}/${payMonth}/pdf`,
         {
           method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
+          },
         }
       );
 

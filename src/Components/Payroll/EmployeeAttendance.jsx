@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthContext } from "../AuthContext";
 
 export default function EmployeeAttendance() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
@@ -13,10 +14,16 @@ export default function EmployeeAttendance() {
   const [empId, setEmpId] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-
+  const{token} = useContext(AuthContext)
   const fetchEployeeData = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/employees");
+      const response = await fetch("http://localhost:8080/api/employees", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ add JWT here
+        },
+      });
       const data = await response.json();
       setEmployees(data.data);
     } catch (error) {
@@ -28,7 +35,13 @@ export default function EmployeeAttendance() {
     try {
       const response = await fetch(
         `http://localhost:8080/records/${id}/${month}`
-      );
+        , {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ add JWT here
+          },
+        });
       const data = await response.json();
       setAttendance(data.data);
     } catch (error) {
