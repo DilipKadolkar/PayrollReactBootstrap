@@ -93,6 +93,7 @@ const adminCard = [
   { title: "Add Employee", icon: faUserPlus, path: "/dashboard/payroll/addEmployee" },
   { title: "Overtime Details", icon: faClock, path: "/dashboard/payroll/overtime" },
   { title: "Employee Attendance", icon: faCalendarDay, path: "/dashboard/payroll/attendance" },
+  { title: "Shift Scheduler", icon: faCalendarDay, path: "/dashboard/payroll/shiftscheduler" },
 ];
 const employeeCard = [
   { title: "Overtime Details", icon: faClock, path: "/dashboard/payroll/overtime" },

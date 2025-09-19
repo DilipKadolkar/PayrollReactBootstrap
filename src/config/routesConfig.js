@@ -108,6 +108,8 @@ import Payslip from "../Components/Employee/PaySlip";
 import Admin from "../Components/Employee/Admin";
 import Payroll from "../Components/payroll";
 import AddAdmin from "../Components/Payroll/AddAdmin";
+import ShiftScheduler from "../Components/Payroll/ShiftScheduler";
+import EmployeeShifts from "../Components/Employee/EmployeeShifts";
 
 const routesConfig = [
   {
@@ -125,6 +127,7 @@ const routesConfig = [
           { index: true, path: "attendance", element: <EmployeeAttendance />, allowedRoles: ["ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_USER"] },
           { path: "overtime", element: <EmployeeOvertime />, allowedRoles: ["ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_USER"] },
           { path: "addadmin", element: <AddAdmin />, allowedRoles: ["ROLE_SUPER_ADMIN"] },
+          { path: "shiftscheduler", element: <ShiftScheduler />, allowedRoles: ["ROLE_ADMIN"] },
         ],
       },
       {
@@ -134,6 +137,7 @@ const routesConfig = [
           { path: "employeedetails", element: <EmployeeDetails />, allowedRoles: ["ROLE_ADMIN", "ROLE_SUPER_ADMIN", "USER"] },
           { path: "payslip", element: <Payslip />, allowedRoles: ["ROLE_ADMIN", "ROLE_USER"] },
           { path: "admin", element: <Admin />, allowedRoles: ["ROLE_ADMIN"] },
+          {path: "shifts", element: <EmployeeShifts />, allowedRoles: ["ROLE_ADMIN", "ROLE_USER"] },
         ],
       },
     ],

@@ -12,6 +12,8 @@ const cards = [
   { title: "Employee Details", icon: faFileInvoiceDollar, path: "/dashboard/employee/employeedetails" },
   { title: "Admin", icon: faChartLine, path: "/dashboard/employee/admin" },
   { title: "Payslip", icon: faBuilding, path: "/dashboard/employee/payslip" },
+  { title: "Shifts", icon: faBuilding, path: "/dashboard/employee/shifts" },
+
 ];
 
 export default function EmployeeInfo() {
