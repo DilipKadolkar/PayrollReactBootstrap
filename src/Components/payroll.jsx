@@ -103,8 +103,8 @@ const employeeCard = [
 export default function Payroll() {
   const navigate = useNavigate();
   const [cardArray , setCardArray] = useState([])
-  const {roles} = useContext(AuthContext);
-  console.log(roles)
+  const {user} = useContext(AuthContext);
+  const roles = user?.roles || [];
   useEffect(()=>{
     if (roles.includes("ROLE_SUPER_ADMIN")) {
       setCardArray(cards);

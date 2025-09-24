@@ -213,8 +213,9 @@ const ShiftScheduler = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // ✅ JWT
+         
         },
+        credentials: "include", // ✅ ensures cookies are sent
       });
       const data = await response.json();
       setEmployees(data.data);
@@ -261,8 +262,9 @@ const ShiftScheduler = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // ✅ JWT
+         
         },
+        credentials: "include", // ✅ ensures cookies are sent
         body: JSON.stringify(payload),
       });
 

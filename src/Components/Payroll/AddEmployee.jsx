@@ -213,8 +213,9 @@ export default function AddEmployee() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ add JWT here
+        
         },
+        credentials: "include", // ✅ ensures cookies are sent
       });
       const data = await response.json();
       setCompanies(data.data);
@@ -238,7 +239,8 @@ export default function AddEmployee() {
       const res = await fetch("http://localhost:8080/api/employees", {
         method: "POST",
         headers: { "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`},
+         },
+         credentials: "include", // ✅ ensures cookies are sent
           body: JSON.stringify(payload),
       });
 

@@ -24,8 +24,9 @@ export default function AddAdmin() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // ✅ add JWT here
+             
             },
+            credentials: "include", // ✅ ensures cookies are sent
           });
       const data = await response.json();
       setCompanies(data.data);
@@ -42,8 +43,9 @@ export default function AddAdmin() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ add JWT here
+            
           },
+          credentials: "include", // ✅ ensures cookies are sent
           body: JSON.stringify({ adminEmail : adminemail , password : adminpassword,role : role}),
         });
         

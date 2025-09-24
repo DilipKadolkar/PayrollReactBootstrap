@@ -32,8 +32,9 @@ export default function ProcessPayroll() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ add JWT here
+           
           },
+          credentials: "include", // ✅ ensures cookies are sent
         });
         const data = await response.json();
         console.log(data.data)

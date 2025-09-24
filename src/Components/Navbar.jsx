@@ -26,11 +26,10 @@ function Navbar() {
     }
   };
 
-  const {token , setToken} = useContext(AuthContext)
+  const { user} = useContext(AuthContext)
  
   const handleLogOut = () =>{
-    localStorage.clear(); // removes all keys and values in localStorage
-    setToken(null)
+    
   }
   return (
     <nav className="navbar navbar-expand-xl navbar-dark bg-dark fixed-top px-3">
@@ -49,7 +48,7 @@ function Navbar() {
 
       <div className={`navbar-collapse ${menuOpen ? "d-block" : "d-none"} d-xl-flex`}>
       <ul className="navbar-nav ms-auto d-flex gap-2 mt-2 mt-xl-0">
-  {!token ? (
+  {!user ? (
     <>
       <li className="nav-item">
         <NavLink to="/" className="nav-link" onClick={handleNavClick}>

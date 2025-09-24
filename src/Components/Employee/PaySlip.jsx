@@ -41,8 +41,8 @@ export default function Payslip() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ add JWT here
           },
+          credentials: "include", // ✅ ensures cookies are sent
         });
         const data = await response.json();
         setEmployees(data.data);
@@ -73,8 +73,9 @@ export default function Payslip() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ add JWT here
+            
           },
+          credentials: "include", // ✅ ensures cookies are sent
         }
       );
 

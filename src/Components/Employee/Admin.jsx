@@ -19,8 +19,9 @@ function Admin() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ add JWT here
+           
           },
+          credentials: "include", // ✅ ensures cookies are sent
         });
         const data = await response.json();
         setEmployeesData(data.data);
@@ -51,8 +52,9 @@ function Admin() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // ✅ add JWT here
+        
         },
+        credentials: "include", // ✅ ensures cookies are sent
         body: JSON.stringify(editedEmployee),
       });
 

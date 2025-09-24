@@ -14,8 +14,9 @@ export default function AddCompany() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            
           },
+          credentials: "include", // ✅ ensures cookies are sent
           body: JSON.stringify({ companyName: newCompanyName ,address:newAddress}),
         });
         

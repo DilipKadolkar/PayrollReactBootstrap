@@ -160,8 +160,9 @@ const EmployeeShifts = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+           
           },
+          credentials: "include", // ✅ ensures cookies are sent
         });
         const data = await response.json();
         setEmployees(data.data);
@@ -183,8 +184,9 @@ const EmployeeShifts = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+         
           },
+          credentials: "include", // ✅ ensures cookies are sent
         }
       );
       const data = await response.json();

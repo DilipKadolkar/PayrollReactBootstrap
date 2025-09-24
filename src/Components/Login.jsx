@@ -62,32 +62,14 @@ export default function Login() {
     const { login } = useContext(AuthContext);
   
     const handleLogin = async (e) => {
-      e.preventDefault();
-  
-      try {
-        const response = await fetch("http://localhost:8080/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-  
-        if (!response.ok) throw new Error("Invalid credentials");
-  
-        // ✅ Read raw JWT string
-        const token = await response.text();
-  
-        // Decode JWT payload to extract roles
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const roles = payload.roles || [];
-  
-        // Store token & roles in context (and localStorage)
-        login(token);
-  
-        navigate("/dashboard/payroll"); // redirect after login
-      } catch (err) {
-        setError(err.message);
-      }
-    };
+        e.preventDefault();
+        try {
+          await login(email, password);
+          navigate("/dashboard/payroll"); // redirect after login
+        } catch (err) {
+          setError(err.message);
+        }
+      };
   
     return (
         <>
