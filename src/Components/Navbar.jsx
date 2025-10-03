@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink ,useNavigate} from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { AuthContext } from "./AuthContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
   // Close menu on window resize if screen is large
   useEffect(() => {
     const handleResize = () => {
@@ -26,11 +27,17 @@ function Navbar() {
     }
   };
 
-  const { user} = useContext(AuthContext)
+  const { user , logout} = useContext(AuthContext)
  
-  const handleLogOut = () =>{
-    
-  }
+  const handleLogOut = async () => {
+    alert("Clicekd")
+    try {
+      await logout(); // call backend and clear cookies
+      navigate("/login"); // redirect to login page
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
   return (
     <nav className="navbar navbar-expand-xl navbar-dark bg-dark fixed-top px-3">
       <span className="navbar-brand fw-bold mx-auto mx-xl-0">
@@ -78,10 +85,17 @@ function Navbar() {
     </>
   ) : (
     <li className="nav-item">
-      <NavLink to="/login" className="nav-link" onClick={handleLogOut}>
-        Log Out
-      </NavLink>
-    </li>
+  <button
+    className="nav-link btn btn-link text-decoration-none"
+    onClick={async () => {
+      await handleLogOut();
+      navigate("/login");
+    }}
+  >
+    Log Out
+  </button>
+</li>
+
   )}
 </ul>
       </div>

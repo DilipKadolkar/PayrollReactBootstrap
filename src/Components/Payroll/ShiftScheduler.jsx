@@ -206,10 +206,11 @@ const ShiftScheduler = () => {
   const [endDate, setEndDate] = useState('');
   const [schedule, setSchedule] = useState(null);
   const today = new Date().toISOString().split('T')[0];
-  const { token } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const companyId = user?.companyId;
   const fetchEmployeeData = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/employees', {
+      const response = await fetch(`http://localhost:8080/api/employees/company/${companyId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

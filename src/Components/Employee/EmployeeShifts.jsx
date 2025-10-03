@@ -1,3 +1,5 @@
+
+// export default EmployeeShifts;
 // import React, { useState, useEffect, useContext } from "react";
 // import { AuthContext } from "../AuthContext";
 
@@ -6,31 +8,43 @@
 //   const [selectedEmail, setSelectedEmail] = useState("");
 //   const [shifts, setShifts] = useState([]);
 //   const [loading, setLoading] = useState(false);
-//   console.log(shifts);
-//   // 🔑 Replace with your actual JWT token
-//   const { token } = useContext(AuthContext);
-//   // Fetch employees on component mount
-//   useEffect(() => {
-//     const fetchEmployeeData = async () => {
-//         try {
-//           const response = await fetch('http://localhost:8080/api/employees', {
-//             method: 'GET',
-//             headers: {
-//               'Content-Type': 'application/json',
-//               Authorization: `Bearer ${token}`, // ✅ JWT
-//             },
-//           });
-//           const data = await response.json();
-//           setEmployees(data.data);
-//         } catch (error) {
-//           console.error('Error fetching Employees:', error);
-//         }
-//       };
+//   const [ShiftName] = useState(["MORNING", "AFTERNOON", "NIGHT"]);
+//   // Modal state
+//   const [showModal, setShowModal] = useState(false);
+//   const [selectedShift, setSelectedShift] = useState(null);
+//   const [formData, setFormData] = useState({
+//     requestedShiftName: "",
+//     shiftChangeReason: "",
+//     remarks: "",
+//   });
 
-//       fetchEmployeeData();
+//   const { user } = useContext(AuthContext);
+//   const role = user?.roles[0];
+//   const companyId = user?.companyId;
+//   const fetchEmployeeData = async () => {
+//     try {
+//       const response = await fetch(`http://localhost:8080/api/employees/company/${companyId}`, {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+         
+//         },
+//         credentials: "include", // ✅ ensures cookies are sent
+//       });
+//       const data = await response.json();
+//       setEmployees(data.data);
+//     } catch (error) {
+//       console.error("Error fetching Employees:", error);
+//     }
+//   };
+
+//   // 🔹 Fetch employees
+//   useEffect(() => {
+   
+//     fetchEmployeeData();
 //   }, []);
 
-//   // Fetch shifts for selected employee
+//   // 🔹 Fetch shifts for selected employee
 //   const fetchShifts = async () => {
 //     if (!selectedEmail) return;
 //     setLoading(true);
@@ -39,9 +53,9 @@
 //         `http://localhost:8080/employeeShifts?email=${selectedEmail}`,
 //         {
 //           headers: {
-//             Authorization: `Bearer ${token}`, // ✅ JWT
-//             "Content-Type": "application/json",
+         
 //           },
+//           credentials: "include", // ✅ ensures cookies are sent
 //         }
 //       );
 //       const data = await response.json();
@@ -52,6 +66,57 @@
 //       console.error("Error fetching shifts:", error);
 //     } finally {
 //       setLoading(false);
+//     }
+//   };
+
+//   // 🔹 Open modal with prefilled data
+//   const openModal = (shift) => {
+//     setSelectedShift(shift);
+//     setFormData({
+//       requestedShiftName: shift.shift.shiftName, // prefill with current shift
+//       shiftChangeReason: "",
+//       remarks: "",
+//     });
+//     setShowModal(true);
+//   };
+
+//   // 🔹 Handle form input
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   // 🔹 Submit shift change request
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!selectedShift) return;
+
+//     const dto = {
+//       employeeEmail: selectedEmail,
+//       currentShiftName: selectedShift.shift.shiftName,
+//       requestedShiftName: formData.requestedShiftName,
+//       shiftChangeReason: formData.shiftChangeReason,
+//       requestedStartDate: selectedShift.startDate,
+//       requestedEndDate: selectedShift.endDate,
+//       status: "PENDING",
+//       remarks: formData.remarks,
+//     };
+
+//     try {
+//       const response = await fetch("http://localhost:8080/shiftchangerequest", {
+//         method: "POST",
+//         headers: {
+        
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(dto),
+//       });
+
+//       if (!response.ok) throw new Error("Failed to request shift change");
+
+//       alert("Shift change request submitted!");
+//       setShowModal(false);
+//     } catch (error) {
+//       console.error("Error submitting shift change:", error);
 //     }
 //   };
 
@@ -97,6 +162,7 @@
 //               <th>Start Date</th>
 //               <th>End Date</th>
 //               <th>Status</th>
+//               <th>Action</th>
 //             </tr>
 //           </thead>
 //           <tbody>
@@ -119,13 +185,88 @@
 //                     {shift.status}
 //                   </span>
 //                 </td>
+//                 <td>
+//                   <button
+//                     className="btn btn-sm btn-warning"
+//                     onClick={() => openModal(shift)}
+//                   >
+//                     Request Change
+//                   </button>
+//                 </td>
 //               </tr>
 //             ))}
 //           </tbody>
 //         </table>
 //       ) : (
-//         !loading &&
-//         selectedEmail && <p>No shifts found for {selectedEmail}.</p>
+//         !loading && selectedEmail && <p>No shifts found for {selectedEmail}.</p>
+//       )}
+
+//       {/* Modal */}
+//       {showModal && (
+//         <div className="modal show d-block" tabIndex="-1">
+//           <div className="modal-dialog">
+//             <form className="modal-content" onSubmit={handleSubmit}>
+//               <div className="modal-header">
+//                 <h5 className="modal-title">Request Shift Change</h5>
+//                 <button
+//                   type="button"
+//                   className="btn-close"
+//                   onClick={() => setShowModal(false)}
+//                 ></button>
+//               </div>
+//               <div className="modal-body">
+//                 <div className="mb-3">
+//                   <label className="form-label">Requested Shift</label>
+//                   <select
+//                     className="form-select"
+//                     name="requestedShiftName"
+//                     value={formData.requestedShiftName}
+//                     onChange={handleChange}
+//                   >
+//                     <option value="">-- Select Shift --</option>
+//                     {ShiftName.map((s) => (
+//                       <option key={s.id} value={s}>
+//                         {s}
+//                       </option>
+//                     ))}
+//                   </select>
+//                 </div>
+
+//                 <div className="mb-3">
+//                   <label className="form-label">Reason</label>
+//                   <textarea
+//                     className="form-control"
+//                     name="shiftChangeReason"
+//                     value={formData.shiftChangeReason}
+//                     onChange={handleChange}
+//                   />
+//                 </div>
+//                 <div className="mb-3">
+//                   <label className="form-label">Remarks</label>
+//                   <input
+//                     type="text"
+//                     className="form-control"
+//                     name="remarks"
+//                     value={formData.remarks}
+//                     onChange={handleChange}
+//                   />
+//                 </div>
+//               </div>
+//               <div className="modal-footer">
+//                 <button
+//                   type="button"
+//                   className="btn btn-secondary"
+//                   onClick={() => setShowModal(false)}
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button type="submit" className="btn btn-success">
+//                   Submit Request
+//                 </button>
+//               </div>
+//             </form>
+//           </div>
+//         </div>
 //       )}
 //     </div>
 //   );
@@ -141,6 +282,8 @@ const EmployeeShifts = () => {
   const [shifts, setShifts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [ShiftName] = useState(["MORNING", "AFTERNOON", "NIGHT"]);
+  const [shiftsFetched, setShiftsFetched] = useState(false);
+
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedShift, setSelectedShift] = useState(null);
@@ -150,29 +293,39 @@ const EmployeeShifts = () => {
     remarks: "",
   });
 
-  const { token } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const role = user?.roles[0]; // Employee role: ROLE_USER
+  const companyId = user?.companyId;
 
-  // 🔹 Fetch employees
-  useEffect(() => {
-    const fetchEmployeeData = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/employees", {
+  // 🔹 Fetch employees only if role is not employee
+  const fetchEmployeeData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/employees/company/${companyId}`,
+        {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-           
-          },
-          credentials: "include", // ✅ ensures cookies are sent
-        });
-        const data = await response.json();
-        setEmployees(data.data);
-      } catch (error) {
-        console.error("Error fetching Employees:", error);
-      }
-    };
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      setEmployees(data.data);
+    } catch (error) {
+      console.error("Error fetching Employees:", error);
+    }finally {
+      setShiftsFetched(true);   // ✅ mark fetch attempt
+      setLoading(false);
+    }
+  };
 
-    fetchEmployeeData();
-  }, [token]);
+  useEffect(() => {
+    if (role !== "ROLE_USER") {
+      fetchEmployeeData();
+    } else {
+      // For employee, pre-select themselves
+      setSelectedEmail(user?.username);
+    }
+  }, []);
 
   // 🔹 Fetch shifts for selected employee
   const fetchShifts = async () => {
@@ -182,17 +335,12 @@ const EmployeeShifts = () => {
       const response = await fetch(
         `http://localhost:8080/employeeShifts?email=${selectedEmail}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-         
-          },
-          credentials: "include", // ✅ ensures cookies are sent
+          headers: {},
+          credentials: "include",
         }
       );
       const data = await response.json();
-      if (data && data.data) {
-        setShifts(data.data);
-      }
+      if (data && data.data) setShifts(data.data);
     } catch (error) {
       console.error("Error fetching shifts:", error);
     } finally {
@@ -204,7 +352,7 @@ const EmployeeShifts = () => {
   const openModal = (shift) => {
     setSelectedShift(shift);
     setFormData({
-      requestedShiftName: shift.shift.shiftName, // prefill with current shift
+      requestedShiftName: shift.shift.shiftName,
       shiftChangeReason: "",
       remarks: "",
     });
@@ -235,10 +383,7 @@ const EmployeeShifts = () => {
     try {
       const response = await fetch("http://localhost:8080/shiftchangerequest", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },credentials: "include",
         body: JSON.stringify(dto),
       });
 
@@ -262,13 +407,20 @@ const EmployeeShifts = () => {
           className="form-select"
           value={selectedEmail}
           onChange={(e) => setSelectedEmail(e.target.value)}
+          disabled={role === "ROLE_USER"} // freeze for employee
         >
-          <option value="">-- Select Employee --</option>
-          {employees.map((emp) => (
-            <option key={emp.id} value={emp.email}>
-              {emp.firstName} ({emp.email})
-            </option>
-          ))}
+          {role === "ROLE_USER" ? (
+            <option value={selectedEmail}>{selectedEmail}</option>
+          ) : (
+            <>
+              <option value="">-- Select Employee --</option>
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.email}>
+                  {emp.firstName} ({emp.email})
+                </option>
+              ))}
+            </>
+          )}
         </select>
       </div>
 
@@ -329,7 +481,10 @@ const EmployeeShifts = () => {
           </tbody>
         </table>
       ) : (
-        !loading && selectedEmail && <p>No shifts found for {selectedEmail}.</p>
+        !loading &&
+        shiftsFetched && ( // ✅ only show after fetch attempt
+          <p>No shifts found for {selectedEmail}.</p>
+        )
       )}
 
       {/* Modal */}
@@ -356,7 +511,7 @@ const EmployeeShifts = () => {
                   >
                     <option value="">-- Select Shift --</option>
                     {ShiftName.map((s) => (
-                      <option key={s.id} value={s}>
+                      <option key={s} value={s}>
                         {s}
                       </option>
                     ))}

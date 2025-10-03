@@ -1,3 +1,283 @@
+// import React, { useState, useEffect, useContext } from "react";
+// import {
+//   Container,
+//   Row,
+//   Col,
+//   Dropdown,
+//   DropdownButton,
+//   Button,
+//   Card,
+//   Spinner,
+// } from "react-bootstrap";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import { AuthContext } from "../AuthContext";
+
+// export default function Payslip() {
+//   const [selectedEmployee, setSelectedEmployee] = useState(null);
+//   const [employees, setEmployees] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [selectedMonth, setSelectedMonth] = useState(null);
+//   const months = [
+//     "January",
+//     "February",
+//     "March",
+//     "April",
+//     "May",
+//     "June",
+//     "July",
+//     "August",
+//     "September",
+//     "October",
+//     "November",
+//     "December",
+//   ];
+
+//   const {user} = useContext(AuthContext)
+//   const companyId = user?.companyId;
+//     const role = user?.roles[0];
+//     const fetchEmployeeData = async () => {
+//       try {
+//         const response = await fetch(`http://localhost:8080/api/employees/company/${companyId}`, {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           credentials: "include", // ✅ ensures cookies are sent
+//         });
+//         const data = await response.json();
+//         setEmployees(data.data);
+//       } catch (error) {
+//         console.error("Error fetching employees:", error);
+//       } 
+//     };
+//   useEffect(() => {
+//     if( role !== "ROLE_USER"){
+//     fetchEmployeeData();
+//     }else{
+      
+//       setSelectedEmployee(user.username)
+     
+//     } 
+//   }, []);
+
+//   const handleSelectEmployee = (eventKey) => {
+//     const employee = employees.find(
+//       (emp) => emp.employeeID === parseInt(eventKey, 10)
+//     );
+//     setSelectedEmployee(employee);
+//   };
+//   const handleMonthSelection = (eventKey) => {
+//     setSelectedMonth(eventKey);
+//   };
+
+//   const downloadPayslip = async (employeeID, payMonth, fileName) => {
+//     try {
+//       const response = await fetch(
+//         `http://localhost:8080/payslip/${employeeID}/${payMonth}/pdf`,
+//         {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+            
+//           },
+//           credentials: "include", // ✅ ensures cookies are sent
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error("Error while fetching the Payslip ");
+//       }
+
+//       const blob = await response.blob();
+//       const url = window.URL.createObjectURL(blob);
+
+//       const link = document.createElement("a");
+//       link.href = url;
+//       link.setAttribute("download", fileName);
+//       document.body.appendChild(link);
+//       link.click();
+//       document.body.removeChild(link);
+//       window.URL.revokeObjectURL(url);
+//     } catch (error) {
+//       console.error("Error downloading PDF:", error);
+//       alert(
+//         `The PaySlip is not Available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
+//       );
+//     }
+//   };
+//   const openPayslipInNewTab = async (employeeID, payMonth) => {
+//     try {
+//       const response = await fetch(
+//         `http://localhost:8080/payslip/${employeeID}/${payMonth}/pdf`,
+//         {
+//           method: "GET",
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error("Error while fetching the Payslip");
+//       }
+
+//       const blob = await response.blob();
+//       const url = window.URL.createObjectURL(blob);
+
+//       // Open the PDF in a new tab
+//       window.open(url, "_blank");
+
+//       // Optional: Revoke the object URL after some delay
+//       setTimeout(() => window.URL.revokeObjectURL(url), 10000); // revoke after 10 seconds
+//     } catch (error) {
+//       console.error("Error opening PDF:", error);
+//       alert(
+//         `The PaySlip is not Available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
+//       );
+//     }
+//   };
+//   const sendPayslipToEmail = async () => {
+//     try {
+//       const response = await fetch(
+//         `http://localhost:8080/payslip/${selectedEmployee.employeeID}/${selectedMonth}/pdf`,
+//         {
+//           method: "GET",
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch PDF for email");
+//       }
+
+//       const blob = await response.blob();
+//       const url = window.URL.createObjectURL(blob); // Temporary Blob URL
+
+//       // Open PDF in a new tab
+//       window.open(url, "_blank");
+
+//       // Prepare and open mail client
+//       const subject = `Payslip for ${selectedEmployee.firstName} ${selectedEmployee.lastName}`;
+//       const body = `Dear ${selectedEmployee.firstName},\n\nPlease find your payslip in the opened tab.\n\nRegards,\nPayroll Team`;
+//       window.location.href = `mailto:?subject=${encodeURIComponent(
+//         subject
+//       )}&body=${encodeURIComponent(body)}`;
+
+//       // Clean up the Blob URL
+//       setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+//     } catch (error) {
+//       console.error("Error sending payslip via email:", error);
+//       alert(
+//         `The PaySlip is not available for ${selectedEmployee.firstName} for the month ${selectedMonth}`
+//       );
+//     }
+//   };
+
+//   return (
+//     <Container className="py-5">
+//       <Row className="justify-content-center">
+//         <Col xs={12} md={8} lg={6}>
+//           <Card className="shadow-lg border-0">
+//             <Card.Body>
+//               <h3 className="text-center mb-4 text-primary">
+//                 Employee Payslip Portal
+//               </h3>
+
+//               {loading ? (
+//                 <div className="text-center my-4">
+//                   <Spinner animation="border" role="status" variant="primary" />
+//                   <div className="mt-2">Loading employees...</div>
+//                 </div>
+//               ) : (
+//                 <div>
+//                   <div className="d-flex align-items-center gap-3 mb-2">
+//                     <DropdownButton
+//                       id="employee-dropdown"
+//                       title={
+//                         selectedEmployee
+//                           ? `${selectedEmployee.firstName} ${selectedEmployee.lastName}`
+//                           : "Select Employee"
+//                       }
+//                       onSelect={handleSelectEmployee}
+//                       className="mb-4"
+//                       variant="outline-primary"
+//                       disabled={role === "ROLE_USER"} 
+//                     >
+//                       {employees.length > 0 ? (
+//                         employees.map((emp) => (
+//                           <Dropdown.Item
+//                             key={emp.employeeID}
+//                             eventKey={emp.employeeID}
+//                           >
+//                             {emp.firstName} {emp.lastName}
+//                           </Dropdown.Item>
+//                         ))
+//                       ) : (
+//                         <Dropdown.Item disabled>
+//                           No Employees Found
+//                         </Dropdown.Item>
+//                       )}
+//                     </DropdownButton>
+
+//                     <DropdownButton
+//                       id="employee-dropdown"
+//                       title={
+//                         selectedMonth ? `${selectedMonth} ` : "Select Month"
+//                       }
+//                       onSelect={handleMonthSelection}
+//                       className="mb-4"
+//                       variant="outline-primary"
+//                     >
+//                       {months.length > 0 ? (
+//                         months.map((month) => (
+//                           <Dropdown.Item key={month} eventKey={month}>
+//                             {month}
+//                           </Dropdown.Item>
+//                         ))
+//                       ) : (
+//                         <Dropdown.Item disabled>No Month Found</Dropdown.Item>
+//                       )}
+//                     </DropdownButton>
+//                   </div>
+//                   <div className="d-grid gap-3">
+//                     <Button
+//                       variant="primary"
+//                       disabled={!selectedEmployee}
+//                       onClick={() =>
+//                         downloadPayslip(
+//                           selectedEmployee.employeeID,
+//                           selectedMonth,
+//                           `${selectedEmployee.firstName}_${selectedEmployee.lastName}_Payslip.pdf`
+//                         )
+//                       }
+//                     >
+//                       Download Payslip
+//                     </Button>
+//                     <Button
+//                       variant="secondary"
+//                       disabled={!selectedEmployee}
+//                       onClick={() =>
+//                         openPayslipInNewTab(
+//                           selectedEmployee.employeeID,
+//                           selectedMonth
+//                         )
+//                       }
+//                     >
+//                       Open in Browser
+//                     </Button>
+//                     <Button
+//                       variant="success"
+//                       disabled={!selectedEmployee}
+//                       onClick={sendPayslipToEmail}
+//                     >
+//                       Send to Email
+//                     </Button>
+//                   </div>
+//                 </div>
+//               )}
+//             </Card.Body>
+//           </Card>
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// }
 import React, { useState, useEffect, useContext } from "react";
 import {
   Container,
@@ -19,40 +299,50 @@ export default function Payslip() {
   const [selectedMonth, setSelectedMonth] = useState(null);
 
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
   ];
 
-  const {token} = useContext(AuthContext)
-  useEffect(() => {
-    const fetchEmployeeData = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/employees", {
+  const { user } = useContext(AuthContext);
+  const companyId = user?.companyId;
+  const role = user?.roles[0]; // Employee role: ROLE_USER
+  function monthNameToLong(monthName) {
+    const index = months.indexOf(monthName);
+    if (index === -1) return null; // month not found
+    return index + 1; // 1-based month
+  }
+  // Fetch employees only if not ROLE_USER
+  const fetchEmployeeData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/employees/company/${companyId}`,
+        {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // ✅ ensures cookies are sent
-        });
-        const data = await response.json();
-        setEmployees(data.data);
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEmployeeData();
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      setEmployees(data.data);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (role !== "ROLE_USER") {
+      fetchEmployeeData();
+    } else {
+      // For employee, pre-select themselves
+      setSelectedEmployee({
+        firstName: user?.username,
+        lastName: "",
+        employeeID: user?.username,
+      });
+      setLoading(false);
+    }
   }, []);
 
   const handleSelectEmployee = (eventKey) => {
@@ -61,8 +351,10 @@ export default function Payslip() {
     );
     setSelectedEmployee(employee);
   };
+
+
   const handleMonthSelection = (eventKey) => {
-    setSelectedMonth(eventKey);
+    setSelectedMonth(monthNameToLong(eventKey));
   };
 
   const downloadPayslip = async (employeeID, payMonth, fileName) => {
@@ -71,21 +363,15 @@ export default function Payslip() {
         `http://localhost:8080/payslip/${employeeID}/${payMonth}/pdf`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            
-          },
-          credentials: "include", // ✅ ensures cookies are sent
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Error while fetching the Payslip ");
-      }
+      if (!response.ok) throw new Error("Error while fetching the Payslip");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", fileName);
@@ -96,70 +382,64 @@ export default function Payslip() {
     } catch (error) {
       console.error("Error downloading PDF:", error);
       alert(
-        `The PaySlip is not Available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
+        `The Payslip is not available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
       );
     }
   };
+
   const openPayslipInNewTab = async (employeeID, payMonth) => {
     try {
       const response = await fetch(
         `http://localhost:8080/payslip/${employeeID}/${payMonth}/pdf`,
         {
           method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Error while fetching the Payslip");
-      }
+      if (!response.ok) throw new Error("Error while fetching the Payslip");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-
-      // Open the PDF in a new tab
       window.open(url, "_blank");
-
-      // Optional: Revoke the object URL after some delay
-      setTimeout(() => window.URL.revokeObjectURL(url), 10000); // revoke after 10 seconds
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
     } catch (error) {
       console.error("Error opening PDF:", error);
       alert(
-        `The PaySlip is not Available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
+        `The Payslip is not available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
       );
     }
   };
+
   const sendPayslipToEmail = async () => {
     try {
       const response = await fetch(
         `http://localhost:8080/payslip/${selectedEmployee.employeeID}/${selectedMonth}/pdf`,
         {
           method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch PDF for email");
-      }
+      if (!response.ok) throw new Error("Failed to fetch PDF for email");
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob); // Temporary Blob URL
-
-      // Open PDF in a new tab
+      const url = window.URL.createObjectURL(blob);
       window.open(url, "_blank");
 
-      // Prepare and open mail client
       const subject = `Payslip for ${selectedEmployee.firstName} ${selectedEmployee.lastName}`;
       const body = `Dear ${selectedEmployee.firstName},\n\nPlease find your payslip in the opened tab.\n\nRegards,\nPayroll Team`;
       window.location.href = `mailto:?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
 
-      // Clean up the Blob URL
       setTimeout(() => window.URL.revokeObjectURL(url), 10000);
     } catch (error) {
       console.error("Error sending payslip via email:", error);
       alert(
-        `The PaySlip is not available for ${selectedEmployee.firstName} for the month ${selectedMonth}`
+        `The Payslip is not available for ${selectedEmployee.firstName} for Month ${selectedMonth}`
       );
     }
   };
@@ -190,8 +470,8 @@ export default function Payslip() {
                           : "Select Employee"
                       }
                       onSelect={handleSelectEmployee}
-                      className="mb-4"
                       variant="outline-primary"
+                      disabled={role === "ROLE_USER"} // freeze for employee
                     >
                       {employees.length > 0 ? (
                         employees.map((emp) => (
@@ -203,36 +483,28 @@ export default function Payslip() {
                           </Dropdown.Item>
                         ))
                       ) : (
-                        <Dropdown.Item disabled>
-                          No Employees Found
-                        </Dropdown.Item>
+                        <Dropdown.Item disabled>No Employees Found</Dropdown.Item>
                       )}
                     </DropdownButton>
 
                     <DropdownButton
-                      id="employee-dropdown"
-                      title={
-                        selectedMonth ? `${selectedMonth} ` : "Select Month"
-                      }
+                      id="month-dropdown"
+                      title={selectedMonth || "Select Month"}
                       onSelect={handleMonthSelection}
-                      className="mb-4"
                       variant="outline-primary"
                     >
-                      {months.length > 0 ? (
-                        months.map((month) => (
-                          <Dropdown.Item key={month} eventKey={month}>
-                            {month}
-                          </Dropdown.Item>
-                        ))
-                      ) : (
-                        <Dropdown.Item disabled>No Month Found</Dropdown.Item>
-                      )}
+                      {months.map((month) => (
+                        <Dropdown.Item key={month} eventKey={month}>
+                          {month}
+                        </Dropdown.Item>
+                      ))}
                     </DropdownButton>
                   </div>
+
                   <div className="d-grid gap-3">
                     <Button
                       variant="primary"
-                      disabled={!selectedEmployee}
+                      disabled={!selectedEmployee || !selectedMonth}
                       onClick={() =>
                         downloadPayslip(
                           selectedEmployee.employeeID,
@@ -245,7 +517,7 @@ export default function Payslip() {
                     </Button>
                     <Button
                       variant="secondary"
-                      disabled={!selectedEmployee}
+                      disabled={!selectedEmployee || !selectedMonth}
                       onClick={() =>
                         openPayslipInNewTab(
                           selectedEmployee.employeeID,
@@ -257,7 +529,7 @@ export default function Payslip() {
                     </Button>
                     <Button
                       variant="success"
-                      disabled={!selectedEmployee}
+                      disabled={!selectedEmployee || !selectedMonth}
                       onClick={sendPayslipToEmail}
                     >
                       Send to Email

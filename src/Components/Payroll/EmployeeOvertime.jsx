@@ -1,85 +1,130 @@
+
+
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "../AuthContext";
 
-export default function EmployeeOvertime() {
+export default function EmployeeAttendance() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [employees, setEmployees] = useState([]);
   const [showEmployeeModal, setEmployeeModal] = useState(false);
   const [showMonthModal, setShowMonthModal] = useState(false);
-  const [attendance , setAttendance] = useState([])
-  const [empId,setEmpId]=useState("")
-  const [showModal,setShowModal] = useState(false)
-  const navigate = useNavigate();
-  const{token} = useContext(AuthContext)
+  const [showYearModal, setShowYearModal] = useState(false);
+  const [attendance, setAttendance] = useState([]);
+  console.log("attendance data", attendance);
+  const [empId, setEmpId] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const { user } = useContext(AuthContext);
+  const companyId = user?.companyId;
+  const role = user?.roles[0];
+
+  // Fetch employee list only for non-employee roles
   const fetchEployeeData = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/employees", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-         
-        },
-        credentials: "include", // ✅ ensures cookies are sent
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/employees/company/${companyId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
       const data = await response.json();
       setEmployees(data.data);
     } catch (error) {
-      console.error("Error fetching companies:", error);
+      console.error("Error fetching employees:", error);
     }
   };
 
-  const fetchAttendance = async (id,month ) => {
+  // Convert month name to number and call backend
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+
+  const fetchAttendance = async (email, month, year) => {
     try {
-      const response = await fetch(`http://localhost:8080/records/${id}/${month}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          
-        },
-        credentials: "include", // ✅ ensures cookies are sent
-      });
+      const monthNumber = months.indexOf(month) + 1;
+
+      const response = await fetch(
+        `http://localhost:8080/api/attendance/daily?email=${email}&year=${year}&month=${monthNumber}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
       const data = await response.json();
       setAttendance(data.data);
     } catch (error) {
-      console.error("Error fetching Attendance:", error);
+      console.error("Error fetching attendance:", error);
     }
   };
 
   useEffect(() => {
     const currentMonth = new Date().toLocaleString("default", { month: "long" });
+    const currentYear = new Date().getFullYear();
     setSelectedMonth(currentMonth);
-    fetchEployeeData()
-    setSelectedMonth("")
+    setSelectedYear(currentYear);
+
+    if (role !== "ROLE_USER") {
+      fetchEployeeData();
+    } else {
+      setSelectedEmployee(user?.username);
+      setEmpId(user?.username);
+    }
   }, []);
 
-  const handleShowClick = ()=>{
-    setShowModal(true)
-    fetchAttendance(empId,selectedMonth)
-    
+  const handleShowClick = () => {
+    setShowModal(true);
+    fetchAttendance(empId, selectedMonth, selectedYear);
+  };
+
+  // Years array for selection (last 10 years)
+  const years = Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - i);
+
+  // Format ISO date to readable string
+  function formatDate(isoDate) {
+    if (!isoDate) return "";
+    const dateObj = new Date(isoDate);
+    return dateObj.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
   }
 
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
+  
   return (
     <div className="container py-5">
-      <h2 className="text-center mb-4">Overtime Details</h2>
+      <h2 className="text-center mb-4">Over Time Details</h2>
 
       <div className="row g-3 justify-content-center">
-        {/* Company Selection */}
-        <div className="col-12 col-md-6">
+        {/* Employee Selection */}
+        <div className="col-12 col-md-4">
           <label className="form-label">Select Employee</label>
-          <Button variant="outline-secondary" className="w-100" onClick={() => setEmployeeModal(true)}>
-            {selectedEmployee || "Select a Employee"}
+          <Button
+            variant="outline-secondary"
+            className="w-100"
+            onClick={() => setEmployeeModal(true)}
+            disabled={role === "ROLE_USER"} // freeze for employee
+          >
+            {selectedEmployee || "Select Employee"}
           </Button>
 
-          <Modal show={showEmployeeModal} onHide={() => setEmployeeModal(false)} centered>
+          <Modal
+            show={showEmployeeModal}
+            onHide={() => setEmployeeModal(false)}
+            centered
+          >
             <Modal.Header closeButton>
               <Modal.Title>Select Employee</Modal.Title>
             </Modal.Header>
@@ -91,7 +136,7 @@ export default function EmployeeOvertime() {
                   className="w-100 text-start my-1"
                   onClick={() => {
                     setSelectedEmployee(emp.firstName);
-                    setEmpId(emp.employeeID)
+                    setEmpId(emp.email);
                     setEmployeeModal(false);
                   }}
                 >
@@ -103,13 +148,21 @@ export default function EmployeeOvertime() {
         </div>
 
         {/* Month Selection */}
-        <div className="col-12 col-md-6">
+        <div className="col-12 col-md-4">
           <label className="form-label">Select Month</label>
-          <Button variant="outline-secondary" className="w-100" onClick={() => setShowMonthModal(true)}>
-            {selectedMonth || "Select month"}
+          <Button
+            variant="outline-secondary"
+            className="w-100"
+            onClick={() => setShowMonthModal(true)}
+          >
+            {selectedMonth || "Select Month"}
           </Button>
 
-          <Modal show={showMonthModal} onHide={() => setShowMonthModal(false)} centered>
+          <Modal
+            show={showMonthModal}
+            onHide={() => setShowMonthModal(false)}
+            centered
+          >
             <Modal.Header closeButton>
               <Modal.Title>Select Month</Modal.Title>
             </Modal.Header>
@@ -130,6 +183,43 @@ export default function EmployeeOvertime() {
             </Modal.Body>
           </Modal>
         </div>
+
+        {/* Year Selection */}
+        <div className="col-12 col-md-4">
+          <label className="form-label">Select Year</label>
+          <Button
+            variant="outline-secondary"
+            className="w-100"
+            onClick={() => setShowYearModal(true)}
+          >
+            {selectedYear || "Select Year"}
+          </Button>
+
+          <Modal
+            show={showYearModal}
+            onHide={() => setShowYearModal(false)}
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Select Year</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {years.map((year, index) => (
+                <Button
+                  key={index}
+                  variant="light"
+                  className="w-100 text-start my-1"
+                  onClick={() => {
+                    setSelectedYear(year);
+                    setShowYearModal(false);
+                  }}
+                >
+                  {year}
+                </Button>
+              ))}
+            </Modal.Body>
+          </Modal>
+        </div>
       </div>
 
       <div className="text-center mt-4">
@@ -138,45 +228,43 @@ export default function EmployeeOvertime() {
         </button>
       </div>
 
-            {showModal ? (
-      <div className="table-responsive pt-5" >
-        <table className="table table-bordered table-striped">
-          <thead className="thead-dark">
-            <tr>
-              <th>Date</th>
-              <th>In Time</th>
-                <th>Out Time</th>
-              <th>Overtime Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attendance.length > 0 ? (
-              attendance.map(emp => (
-                <tr key={emp.Id}>
-                  <td>{emp.todayDate}</td>
-                  <td> {emp.startTime}</td>
-                  <td> {emp.endTime}</td>
-                  <td  className={
-                        emp.overtimeHours >0
-                          ? "text-danger"
-                          : "" ||
-                            emp.overtimeHours>0
-                          ? "text-success"
-                          : ""
-                      }>{emp.overtimeHours}</td>
-                 
-
-                </tr>
-              ))
-            ) : (
+      {showModal && (
+        <div className="table-responsive pt-5">
+          <table className="table table-bordered table-striped">
+            <thead className="thead-dark">
               <tr>
-                <td colSpan="3" className="text-center">No Overtime Details.</td>
+                <th>Date</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Over Time</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-    
-      </div>):(<h1></h1>)} 
+            </thead>
+            <tbody>
+              {attendance.length > 0 ? (
+                attendance.map((emp) => (
+                  <tr key={emp.Id}>
+                    <td>{formatDate(emp.date)}</td>
+                    <td>{formatDate(emp.inTime)}</td>
+                    <td>{formatDate(emp.outTime)}</td>
+                    <td
+                      
+                    >
+                      {emp.overtimeHours
+                      }
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">
+                    No Attendance found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
