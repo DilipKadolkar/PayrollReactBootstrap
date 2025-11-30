@@ -85,7 +85,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  
   // Fetch current user
   const fetchUser = async () => {
     try {
@@ -135,9 +135,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   fetchUser();
+  // }, []);
 
   const login = async (email, password) => {
     const res = await fetch("http://localhost:8080/login", {

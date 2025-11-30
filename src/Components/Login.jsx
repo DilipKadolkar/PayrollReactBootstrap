@@ -58,7 +58,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
-  
+
     const { login } = useContext(AuthContext);
   
     const handleLogin = async (e) => {
@@ -94,6 +94,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}/>
                                 </div>
                                 <div className="d-grid">
+                                 <h6 className="text-danger text-center">{error}</h6>   
                                 <button type="submit" className="btn btn-primary"  >Login</button>
 
                                 </div>

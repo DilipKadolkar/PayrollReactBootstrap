@@ -110,6 +110,7 @@ import Payroll from "../Components/payroll";
 import AddAdmin from "../Components/Payroll/AddAdmin";
 import ShiftScheduler from "../Components/Payroll/ShiftScheduler";
 import EmployeeShifts from "../Components/Employee/EmployeeShifts";
+import Profile from "../Components/Payroll/Profile";
 
 const routesConfig = [
   {
@@ -128,6 +129,7 @@ const routesConfig = [
           { path: "overtime", element: <EmployeeOvertime />, allowedRoles: ["ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_USER"] },
           { path: "addadmin", element: <AddAdmin />, allowedRoles: ["ROLE_SUPER_ADMIN"] },
           { path: "shiftscheduler", element: <ShiftScheduler />, allowedRoles: ["ROLE_ADMIN"] },
+          { path: "profile", element: <Profile />, allowedRoles: ["ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_USER"] },
         ],
       },
       {

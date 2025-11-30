@@ -181,7 +181,7 @@
 //     </div>
 //   );
 // }
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser, faCalendar, faPhone, faEnvelope, faIdCard,
@@ -189,13 +189,15 @@ import {
   faHome, faMoneyBill, faIdBadge, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 import { Modal, Button } from 'react-bootstrap';
+import { AuthContext } from "../AuthContext";
 
 export default function AddEmployee() {
   const [selectedCompany, setSelectedCompany] = useState("");
   const [companyData, setCompanyData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
-
+  const { user } = useContext(AuthContext);
+  console.log('user in add emp', user);
   const [employee, setEmployee] = useState({
     firstName: "", lastName: "", fullName: "", fatherName: "", birthDate: "", hireDate: "", gender: "",
     phoneNumber: "", emergencyContact: "", reportingManager: "", probationPeriod: "", aadharNumber: "",
@@ -203,34 +205,34 @@ export default function AddEmployee() {
     city: "", state: "", zipCode: "", employeeID: "", userId: ""
   });
 
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
+  // useEffect(() => {
+  //   fetchCompanies();
+  // }, []);
 
-  console.log('companies', companies);
-  const fetchCompanies = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/companies", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      const data = await response.json();
-      setCompanies(data.data); // array of companies
-    } catch (err) {
-      console.error("Error fetching companies:", err);
-    }
-  };
+  // console.log('companies', companies);
+  // const fetchCompanies = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:8080/api/companies", {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //       credentials: "include",
+  //     });
+  //     const data = await response.json();
+  //     setCompanies(data.data); // array of companies
+  //   } catch (err) {
+  //     console.error("Error fetching companies:", err);
+  //   }
+  // };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedCompany || !employee.firstName) {
-      return alert("Please select a company and enter first name.");
-    }
+    // if (!selectedCompany || !employee.firstName) {
+    //   return alert("Please select a company and enter first name.");
+    // }
 
     const payload = {
       ...employee,
-      companyId: companyData.id
+      companyId: user.companyId
     };
 
     try {
@@ -281,7 +283,7 @@ export default function AddEmployee() {
         <h2 className="text-center mb-4">Add Employee</h2>
         <form onSubmit={handleFormSubmit}>
           {/* Company Selection */}
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="form-label"><FontAwesomeIcon icon={faBuilding} /> Select Company</label>
             <div>
               <Button variant="outline-secondary" className="w-100 text-start" onClick={() => setShowCompanyModal(true)}>
@@ -310,7 +312,7 @@ export default function AddEmployee() {
                 </Button>
               ))}
             </Modal.Body>
-          </Modal>
+          </Modal> */}
 
           {/* Employee Fields */}
           <div className="row">
